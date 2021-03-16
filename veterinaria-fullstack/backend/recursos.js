@@ -1,10 +1,10 @@
 module.exports = {
     mascotas: [
-        {tipo: "Perro", nombre: "Manchas0", dueno:"Miguel" },
-        {tipo: "Perro", nombre: "Manchas1", dueno:"Miguel" },
-        {tipo: "Perro", nombre: "Manchas2", dueno:"Miguel" },
-        {tipo: "Perro", nombre: "Manchas3", dueno:"Miguel" },
-        {tipo: "Perro", nombre: "Manchas4", dueno:"Miguel" },
+        {tipo: "Gato", nombre: "Manchas0", dueno:"Edwin" },
+        {tipo: "Gato", nombre: "Manchas1", dueno:"Edwin" },
+        {tipo: "Gato", nombre: "Manchas2", dueno:"Edwin" },
+        {tipo: "Gato", nombre: "Manchas3", dueno:"Edwin" },
+        {tipo: "Gato", nombre: "Manchas4", dueno:"Edwin" },
     ],
     veterinarias: [
         {nombre: "Alexandra", apellido: "Perez", documento:"1234567890" },
