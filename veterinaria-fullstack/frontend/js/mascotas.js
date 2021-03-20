@@ -1,129 +1,160 @@
-const tipo = document.getElementById("tipo");
-const nombre = document.getElementById("nombre");
-const dueno = document.getElementById("dueno");
-const indice = document.getElementById("indice");
-const form = document.getElementById("form");
-const btnGuardar = document.getElementById("btn-guardar");
-const listaMascotas = document.getElementById("lista-mascotas");
-const url = "http://localhost:5000/mascotas";
+let lista_mascotas = document.getElementById("listamascotas")
+let tipo = document.getElementById("tipo")
+let nombre = document.getElementById("nombre")
+let dueno = document.getElementById("dueno")
+let form = document.getElementById("form")
+let btnGuardar = document.getElementById("btnGuardar");
+let btn_cerrar = document.getElementById("btn_cerrar");
+let btn_cerrarX = document.getElementById("btn_cerrarX");
+let indice = document.getElementById("indice");
+let etiqueta = document.getElementById("exampleModalLongTitle");
+let url = "https://veterinaria-backend-chi.vercel.app/mascotas";
+
 
 let mascotas = [];
 
-async function listarMascotas() {
-  try {
-    const respuesta = await fetch(url);
-    const mascotasDelServer = await respuesta.json();
-    if (Array.isArray(mascotasDelServer)) {
-      mascotas = mascotasDelServer;
-    }
-    if (mascotas.length > 0) {
-      const htmlMascotas = mascotas
-        .map(
-          (mascota, index) => `<tr>
-      <th scope="row">${index}</th>
-      <td>${mascota.tipo}</td>
-      <td>${mascota.nombre}</td>
-      <td>${mascota.dueno}</td>
-      <td>
-          <div class="btn-group" role="group" aria-label="Basic example">
-              <button type="button" class="btn btn-info editar"><i class="fas fa-edit"></i></button>
-              <button type="button" class="btn btn-danger eliminar"><i class="far fa-trash-alt"></i></button>
-          </div>
-      </td>
-    </tr>`
-        )
-        .join("");
-      listaMascotas.innerHTML = htmlMascotas;
-      Array.from(document.getElementsByClassName("editar")).forEach(
-        (botonEditar, index) => (botonEditar.onclick = editar(index))
-      );
-      Array.from(document.getElementsByClassName("eliminar")).forEach(
-        (botonEliminar, index) => (botonEliminar.onclick = eliminar(index))
-      );
-      return;
-    }
-    listaMascotas.innerHTML = `<tr>
-        <td colspan="5" class="lista-vacia">No hay mascotas</td>
-      </tr>`;
-  } catch (error) {
-    console.log({ error });
-    $(".alert").show();
-  }
-}
-
-async function enviarDatos(evento) {
-  evento.preventDefault();
-  try {
-    const datos = {
-      tipo: tipo.value,
-      nombre: nombre.value,
-      dueno: dueno.value,
-    };
-    let method = "POST";
-    let urlEnvio = url;
-    const accion = btnGuardar.innerHTML;
-    if (accion === "Editar") {
-      method = "PUT";
-      mascotas[indice.value] = datos;
-      urlEnvio = `${url}/${indice.value}`;
-    }
-    const respuesta = await fetch(urlEnvio, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(datos),
-      mode: "cors",
-    });
-    if (respuesta.ok) {
-      listarMascotas();
-      resetModal();
-    }
-  } catch (error) {
-    console.log({ error });
-    $(".alert").show();
-  }
-}
-
-function editar(index) {
-  return function cuandoCliqueo() {
-    btnGuardar.innerHTML = "Editar";
-    $("#exampleModalCenter").modal("toggle");
-    const mascota = mascotas[index];
-    nombre.value = mascota.nombre;
-    dueno.value = mascota.dueno;
-    tipo.value = mascota.tipo;
-    indice.value = index;
-  };
-}
-
-function resetModal() {
-  nombre.value = "";
-  dueno.value = "";
-  tipo.value = "";
-  indice.value = "";
-  btnGuardar.innerHTML = "Crear";
-}
-
-function eliminar(index) {
-  const urlEnvio = `${url}/${index}`;
-  return async function clickEnEliminar() {
+async function ListarMascotas()
+{
     try {
-      const respuesta = await fetch(urlEnvio, {
-        method: "DELETE",
-      });
-      if (respuesta.ok) {
-        listarMascotas();
-        resetModal();
-      }
+        const respuesta = await fetch("https://veterinaria-backend-chi.vercel.app/mascotas");
+        const mascotasServer = await respuesta.json();
+
+        if(Array.isArray(mascotasServer))
+        {
+            mascotas = mascotasServer;
+        }
+
+        if(mascotas.length>0)
+        {
+            const HTMLMascotas = mascotas.map((mascota,index)=>
+                `<tr>
+                    <th scope="row">${index}</th>
+                    <td>${mascota.tipo}</td>
+                    <td>${mascota.nombre}</td>
+                    <td>${mascota.dueno}</td>
+                    <td>
+                        <div class="btn-group" role="group" aria-label="Basic example">
+                            <button type="button" class="btn btn-info editar"><i class="fas fa-edit"></i></button>
+                            <button type="button" class="btn btn-danger eliminar"><i class="far fa-trash-alt"></i></button>
+                        </div>
+                    </td>
+                </tr>`
+            ).join("");
+            lista_mascotas.innerHTML=HTMLMascotas;
+            Array.from(document.getElementsByClassName("editar")).forEach((btn_modificar,index)=>btn_modificar.onclick = editar(index))
+            Array.from(document.getElementsByClassName("eliminar")).forEach((btn_eliminar,index)=>btn_eliminar.onclick = eliminar(index))
+        }
+        else
+        {
+            lista_mascotas.innerHTML = `
+                <tr>
+                    <td colspan="5" center>No Existen Mascotas....</td>
+                </tr>`
+        }
+        
     } catch (error) {
-      console.log({ error });
-      $(".alert").show();
+        console.log(error);
+        $(".alert").show();       
     }
-  };
+    
 }
 
-listarMascotas();
+async function EnviarDatos(evento)
+{
+    evento.preventDefault();
+    
+    try {
+        const datos = 
+            {
+                tipo: tipo.value,
+                nombre: nombre.value,
+                dueno: dueno.value
+            }
 
-form.onsubmit = enviarDatos;
-btnGuardar.onclick = enviarDatos;
+        let method = "POST"
+        const accion = btnGuardar.innerHTML;
+        switch(accion)
+        {
+            case "Modificar":
+                method = "PUT"
+                mascotas[indice.value]=datos;
+                url = `https://veterinaria-backend-chi.vercel.app/mascotas/${indice.value}`
+            break;
+            case "Eliminar":
+                method = "DELETE"
+                url = `https://veterinaria-backend-chi.vercel.app/mascotas/${indice.value}`
+            break;
+        }
+        const respuesta = await fetch(url, {
+            method,
+            headers:
+            {
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify(datos)
+        })
+
+        if(respuesta.ok)
+        {
+            resetModal();
+            ListarMascotas();
+        }
+    } catch (error) {
+        console.log(error);
+        $(".alert").show();  
+    }    
+}
+function resetModal()
+{
+    btnGuardar.innerHTML="Guardar"
+    tipo.value="Tipo animal";
+    nombre.value="";
+    dueno.value="Dueño";
+    indice.value="";
+    etiqueta.textContent = "Nueva Mascota"
+    nombre.disabled = false;
+    dueno.disabled = false;
+    tipo.disabled = false;
+}
+function eliminar(index)
+{
+    return function click ()
+    {
+
+        btnGuardar.innerHTML="Eliminar"
+        etiqueta.textContent = "¿Desea eliminar el registro?"
+        nombre.disabled = true;
+        dueno.disabled = true;
+        tipo.disabled = true;
+        RellenarModal(index);
+    }
+}
+function RellenarModal(index)
+{
+    $("#exampleModalCenter").modal("toggle")
+        
+        console.log(mascotas[index])
+        const mascota = mascotas[index];
+
+        nombre.value = mascota.nombre
+        tipo.value = mascota.tipo
+        dueno.value = mascota.dueno
+        indice.value = index;
+}
+function editar (index)
+{
+    return function click ()
+    {
+        btnGuardar.innerHTML="Modificar"
+        etiqueta.textContent = "Actualizar Mascota"
+        RellenarModal(index);
+
+    }
+}
+
+ListarMascotas();
+
+form.onsubmit = EnviarDatos;
+btnGuardar.onclick = EnviarDatos;
+btn_cerrar.onclick = resetModal;
+btn_cerrarX.onclick = resetModal;
