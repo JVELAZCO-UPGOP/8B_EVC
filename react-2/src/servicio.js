@@ -1,4 +1,4 @@
-const API_URL = "https://veterinaria-backend.now.sh";
+const API_URL = "http://localhost:5000/";
 
 export const listarEntidad = async ({ entidad = "mascotas" }) => {
   try {
